@@ -1,0 +1,29 @@
+# Default values (reset this variables in your pillars):
+
+gitlab-runner:
+  user:
+    name: 'gitlab-runner'
+    groups:
+      - 'docker'
+      - 'sudo'
+
+  agent:
+    url:          'https://gitlab.ptsecurity.com/ci'
+    build_disk:   '/home/gitlab-runner/disk'
+    service_name: 'gitlab-runner'
+
+#  global-options:
+#    concurrent: 5   # count of parallel pipelines
+#    check_interval: 60
+#
+#  registration-tokens:
+#    'private_or_shared_token': 
+#      default:      # any name
+#        # Used in run command like this: --tags-list='linux, docker'
+#        - tag-list: 'linux, docker, build-low-med, build-med-high, build, {{ grains.id }}'
+#        - executor: 'docker'    # executors: https://gitlab.com/gitlab-org/gitlab-runner/blob/master/docs/executors/README.md
+#        - docker-image: 'python:3.4'
+#        - docker-disable-cache: 'false'
+#        - docker-volumes: /home/gitlab-runner/disk/cache:/home/gitlab-runner/disk/cache
+#        - docker-volumes: /home/gitlab-runner/disk/builds:/home/gitlab-runner/disk/builds 
+#        - docker-volumes: /var/run/docker.sock:/var/run/docker.sock

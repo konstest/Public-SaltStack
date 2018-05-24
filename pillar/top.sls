@@ -1,3 +1,3 @@
 base:
   '*':
-    - all
+    - all {#- test pillar data #}
