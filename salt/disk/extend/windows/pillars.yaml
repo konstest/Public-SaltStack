@@ -1,0 +1,9 @@
+disk:
+  extend:
+    windows:
+      'Disk 1':
+        Ltr: J
+        Label: 'Docker disk'
+      'Disk 2':
+        MountDir: 'C:\Gitlab-Runner\builds' # Mountdir and Ltr cannot be used together
+        Label: 'Gitlab-Runner build disk'

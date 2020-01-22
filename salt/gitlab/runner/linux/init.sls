@@ -81,7 +81,7 @@ Registration {{ grains.id }}___{{runner}} runner:
     - env:
       - REGISTRATION_TOKEN: {{token}}
       - REGISTER_NON_INTERACTIVE: 'true'
-      - CI_SERVER_URL: '{{salt['pillar.get']('gitlab-runner:agent:url', 'https://gitlab.ptsecurity.com/ci')}}'
+      - CI_SERVER_URL: '{{salt['pillar.get']('gitlab-runner:agent:url', 'https://gitlab.example.com/ci')}}'
       - RUNNER_BUILDS_DIR: '{{salt['pillar.get']('gitlab-runner:agent:build_disk', '/home/gitlab-runner/disk')}}/builds'
       - RUNNER_CACHE_DIR: '{{salt['pillar.get']('gitlab-runner:agent:build_disk', '/home/gitlab-runner/disk')}}/cache'
       - DOCKER_VOLUMES: '{{salt['pillar.get']('gitlab-runner:agent:build_disk', '/home/gitlab-runner/disk')}}/cache:/cache'

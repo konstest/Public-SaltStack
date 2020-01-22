@@ -8,7 +8,7 @@ gitlab-runner:
       - 'sudo'
 
   agent:
-    url:          'https://gitlab.ptsecurity.com/ci'
+    url:          'https://gitlab.example.com/ci'
     build_disk:   '/home/gitlab-runner/disk'
     service_name: 'gitlab-runner'
 

@@ -1,0 +1,4 @@
+disk:
+  extend:
+    lvm:
+      /dev/sda1: /dev/system-vg/rootfs
