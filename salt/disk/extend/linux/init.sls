@@ -7,13 +7,14 @@
 {%- if salt.cmd.shell('which parted') %}
   {%- set block_devices = salt['partition.get_block_device']() %}
   
-  {%- for disk in block_devices %}
-    {%- set disk = "/dev/"~disk %}
+  {%- for dev in block_devices %}
+    {%- if 'sd' in dev %}
+    {%- set disk = "/dev/"~dev %}
     {%- set disk_partitions = salt.partition.list(disk) %}
-    {%- if disk_partitions.info['partition table'] == 'loop' %} {#- Check if disk has't partitions #}
+    {%- if disk_partitions.get('info').get('partition table') == 'loop' %} {#- Check if disk has't partitions #}
 Extend filesystem on {{disk}} disk entirely:
   cmd.run:
-    - name: resize2fs {{disk}}
+    - name: e2fsck -f {{disk}}; resize2fs {{disk}}
     {%- else %}
       {%- set list_part_numbers = disk_partitions.partitions.keys()|sort %}      
       {%- if list_part_numbers != [] %}
@@ -24,7 +25,7 @@ Extend filesystem on {{disk}} disk entirely:
         {%- if old_size.replace('GB','')|float < new_size.replace('GB','')|float %}
 Extend only last partition {{disk_partition}} from {{old_size}} to {{new_size}}:
   cmd.run:
-    - name: parted -ms {{disk}} resizepart {{last_part_number}} {{new_size}} && partprobe -s
+    - name: parted -ms {{disk}} resizepart {{last_part_number}} {{new_size}} || (parted -ms {{disk}} resizepart {{list_part_numbers[-1]}} 100% && parted -ms {{disk}} resizepart {{last_part_number}} 100%) && partprobe -s
           {%- if 'lvm' in disk_partitions.partitions[last_part_number]['flags'] %}
 Extend physical LVM volume on {{disk_partition}}:
   cmd.run:
@@ -36,14 +37,19 @@ Extend logical LVM volume {{lvm[disk_partition]}} on {{disk_partition}}:
     - name: lvresize {{lvm[disk_partition]}} {{disk_partition}} && resize2fs {{lvm[disk_partition]}}
             {%- endif %}
           {%- endif %}
-          {%- if 'ext' in disk_partitions.partitions[last_part_number]['type'] %}
+          {%- if 'type' in disk_partitions.partitions[last_part_number] and 'ext' in disk_partitions.partitions[last_part_number]['type'] or
+          'file system' in disk_partitions.partitions[last_part_number] and 'ext' in disk_partitions.partitions[last_part_number]['file system'] %}
 Extend {{disk_partitions.partitions[last_part_number]['type']}} filesystem on {{disk}}{{last_part_number}} from {{old_size}} to {{new_size}}:
   cmd.run:
     - name: pvresize {{disk}}{{last_part_number}}
           {%- endif %}
+
         {%- endif %}
       {%- endif %}
     {%- endif %}
+    {%- endif %} {#- if 'sd' in dev #}
   {%- endfor %}
   
 {%- endif %}
+parted:
+  pkg.installed
